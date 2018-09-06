@@ -10,36 +10,30 @@ namespace JoaoWebAPI.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        // GET api/values
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        private readonly Contexto _contexto;
+
+        public ValuesController(Contexto contexto)
         {
-            return new string[] { "value1", "value2" };
+            _contexto = contexto;
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        //para chamar: api/values - GET
+        [HttpGet(Name ="GetAll")]
+        public ActionResult<IEnumerable<InformacaoNavegacao>> Get()
         {
-            return "value";
+            return this._contexto.InformacaoNavegacao.ToList();
         }
 
-        // POST api/values
+        // para chamar: api/values - POST
         [HttpPost]
-        public void Post([FromBody] string value)
+        public ActionResult Post([FromBody] InformacaoNavegacao info)
         {
-        }
+            InformacaoNavegacao novo = new InformacaoNavegacao();
+            novo = info;
+            this._contexto.InformacaoNavegacao.Add(novo);
+            this._contexto.SaveChangesAsync();
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return RedirectPermanent("GetAll");
         }
     }
 }
